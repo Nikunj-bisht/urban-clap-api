@@ -4,6 +4,7 @@ import com.urban.urbanclapapi.dao.Urbanuserdao;
 import com.urban.urbanclapapi.encryption.PasswordCheck;
 import com.urban.urbanclapapi.requestdata.Signupuser;
 import com.urban.urbanclapapi.tables.Urbanuser;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -28,6 +29,7 @@ public class Authcontroller {
     public @ResponseBody ResponseEntity<?> save(@RequestBody Signupuser signuser){
 
         List<Signupuser> list = new ArrayList<>();
+
         try {
             String password = PasswordCheck.getencryptedpassword(signuser.getPassword());
             Urbanuser users = new Urbanuser(signuser.getUser_name(), password
@@ -47,9 +49,30 @@ public class Authcontroller {
 
         }
 
-
 }
 
+@PostMapping(value = "/login")
+public @ResponseBody ResponseEntity<?> userlogin(@RequestBody Signupuser signupuser){
+try{
+
+ if(urbanuserdao.finduser(signupuser.getEmail(),signupuser.getPassword())){
+
+     return new ResponseEntity<>("Success", HttpStatus.OK);
+
+
+ }else{
+     return new ResponseEntity<>("Wrong credentials!!", HttpStatus.NON_AUTHORITATIVE_INFORMATION);
+
+ }
+
+        }catch(Exception e){
+    e.printStackTrace();
+            return new ResponseEntity<>("Try again", HttpStatus.BAD_REQUEST);
+
+        }
+
+
+}
 
 
 
